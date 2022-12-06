@@ -6,7 +6,7 @@
 /*   By: umartin- <umartin-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 17:50:47 by umartin-          #+#    #+#             */
-/*   Updated: 2022/12/06 19:48:07 by umartin-         ###   ########.fr       */
+/*   Updated: 2022/12/06 21:09:23 by umartin-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ typedef struct s_data
 	pthread_mutex_t	*fork;
 	pthread_mutex_t	dead;
 	pthread_mutex_t	write_mutex;
+	struct s_philo	*philo;
 }	t_data;
 
 typedef struct s_philo
@@ -43,7 +44,7 @@ typedef struct s_philo
 	int			right_fork;
 	int			num_ate;
 	pthread_t	thread;
-	t_data		*save_data;
+	t_data		*data;
 }	t_philo;
 
 //////////////////////UTILS//////////////////////

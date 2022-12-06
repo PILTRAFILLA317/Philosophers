@@ -6,7 +6,7 @@
 /*   By: umartin- <umartin-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 16:53:21 by umartin-          #+#    #+#             */
-/*   Updated: 2022/12/06 20:12:25 by umartin-         ###   ########.fr       */
+/*   Updated: 2022/12/06 21:31:30 by umartin-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,10 +49,45 @@ int	data_init(t_data *data, int ac, char **av)
 	return (0);
 }
 
-// int	philo_init(t_data *data)
-// {
-	
-// }
+void	*control_de_rutina(void *data)
+{
+	t_philo	*philo;
+
+	philo = (t_philo *)data;
+	printf("Rutina controlada ID: %d\n", philo->num);
+	return (NULL);
+}
+
+void	philo_data(t_data *data, t_philo *philo, int i)
+{
+	philo->num_ate = 0;
+	philo->num = i;
+	philo->right_fork = (i + 1) % data->num_of_philo;
+	philo->left_fork = i;
+	philo->data = data;
+}
+
+int	philo_init(t_data *data)
+{
+	int	i;
+
+	i = -1;
+	data->philo = malloc(sizeof(t_philo) * data->num_of_philo);
+	if (!data->philo)
+		return (error(("\033[0;31mPhilo memory allocation error\033[0;31m")));
+	while (++i < data->num_of_philo)
+	{
+		philo_data(data, &data->philo[i], i);
+		if (pthread_create(&data->philo[i].thread,
+				NULL, control_de_rutina, &data->philo[i]))
+			return (error(("\033[0;31mPhilo thread error\033[0;31m")));
+	}
+	while (++i < data->num_of_philo)
+		if (pthread_join(&data->philo[i].thread, NULL))
+			return (error(("\033[0;31mPhilo thread join error\033[0;31m")));
+	i = -1;
+	return (0);
+}
 
 int	main(int ac, char **av)
 {
