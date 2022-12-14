@@ -6,11 +6,68 @@
 /*   By: umartin- <umartin-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 16:53:21 by umartin-          #+#    #+#             */
-/*   Updated: 2022/12/06 21:31:30 by umartin-         ###   ########.fr       */
+/*   Updated: 2022/12/14 21:15:12 by umartin-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+int	get_time(void)
+{
+	struct timeval	tm;
+
+	gettimeofday(&tm, NULL);
+	return (tm.tv_sec * 1000 + tm.tv_usec / 1000);
+}
+
+int	time_clock(int origin)
+{
+	int	current;
+
+	current = get_time();
+	return (current - origin);
+}
+
+void	philo_dead(t_philo *philo, int time)
+{
+	int	current;
+
+	current = get_time();
+	if ((current - philo->last_meal) > philo->data->time_to_die)
+	{
+		pthread_mutex_lock(&philo->data->write_mutex);
+		printf("\x1B[34m%d\x1B[0m  %d \033[1;37mdied\033[0;m 💀\n",
+			time, philo->num + 1);
+		exit (0);
+	}
+}
+
+int	precise_usleep(int time, t_philo *philo)
+{
+	int	t;
+
+	time = time * 1000;
+	t = time % 100;
+	time = (time / 100);
+	usleep (t);
+	while (time > 0)
+	{
+		philo_dead(philo, time_clock(philo->data->init_time));
+		usleep(100);
+		time--;
+	}
+	// printf("time at end: %d\n", time_clock(philo->data->init_time));
+	// exit(0);
+	return (0);
+}
+
+int	ft_write(t_philo *philo, char *str, int time)
+{
+	pthread_mutex_lock(&philo->data->write_mutex);
+	printf("\x1B[34m%d\x1B[0m  %d %s\n", time, philo->num + 1, str);
+	pthread_mutex_unlock(&philo->data->write_mutex);
+	return (0);
+}
 
 int	fork_init(t_data *data)
 {
@@ -49,12 +106,45 @@ int	data_init(t_data *data, int ac, char **av)
 	return (0);
 }
 
+void	routine_sleep(t_philo	*philo)
+{
+	ft_write(philo, "is sleeping", time_clock(philo->data->init_time));
+	precise_usleep(philo->data->time_to_sleep, philo);
+}
+
+void	routine_think(t_philo	*philo)
+{
+	ft_write(philo, "is thinking", time_clock(philo->data->init_time));
+}
+
+void	routine_eat(t_philo	*philo)
+{
+	pthread_mutex_lock(&philo->data->fork[philo->left_fork]);
+	ft_write(philo, "has taken a fork", time_clock(philo->data->init_time));
+	pthread_mutex_lock(&philo->data->fork[philo->right_fork]);
+	ft_write(philo, "has taken a fork", time_clock(philo->data->init_time));
+	philo->last_meal = get_time();
+	ft_write(philo, "is eating", time_clock(philo->data->init_time));
+	precise_usleep(philo->data->time_to_eat, philo);
+	pthread_mutex_unlock(&philo->data->fork[philo->left_fork]);
+	pthread_mutex_unlock(&philo->data->fork[philo->right_fork]);
+}
+
 void	*control_de_rutina(void *data)
 {
 	t_philo	*philo;
 
 	philo = (t_philo *)data;
-	printf("Rutina controlada ID: %d\n", philo->num);
+	if (philo->num % 2 == 0)
+		usleep (100);
+	philo->data->init_time = get_time();
+	philo->last_meal = get_time();
+	while (1)
+	{
+		routine_eat(philo);
+		routine_sleep(philo);
+		routine_think(philo);
+	}
 	return (NULL);
 }
 
@@ -82,10 +172,10 @@ int	philo_init(t_data *data)
 				NULL, control_de_rutina, &data->philo[i]))
 			return (error(("\033[0;31mPhilo thread error\033[0;31m")));
 	}
-	while (++i < data->num_of_philo)
-		if (pthread_join(&data->philo[i].thread, NULL))
-			return (error(("\033[0;31mPhilo thread join error\033[0;31m")));
 	i = -1;
+	while (++i < data->num_of_philo)
+		if (pthread_join(data->philo[i].thread, NULL))
+			return (error(("\033[0;31mPhilo thread join error\033[0;31m")));
 	return (0);
 }
 

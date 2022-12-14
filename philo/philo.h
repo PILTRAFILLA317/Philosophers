@@ -6,7 +6,7 @@
 /*   By: umartin- <umartin-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 17:50:47 by umartin-          #+#    #+#             */
-/*   Updated: 2022/12/06 21:09:23 by umartin-         ###   ########.fr       */
+/*   Updated: 2022/12/14 18:13:29 by umartin-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ typedef struct s_data
 	time_t			time_to_eat;
 	time_t			time_to_sleep;
 	int				num_meals;
-	int				ate_time;
 	int				stop;
 	int				init_time;
 	pthread_mutex_t	*fork;
@@ -42,6 +41,7 @@ typedef struct s_philo
 	int			num;
 	int			left_fork;
 	int			right_fork;
+	int			last_meal;
 	int			num_ate;
 	pthread_t	thread;
 	t_data		*data;
