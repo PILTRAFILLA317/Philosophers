@@ -6,7 +6,7 @@
 /*   By: umartin- <umartin-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 16:53:21 by umartin-          #+#    #+#             */
-/*   Updated: 2022/12/14 21:15:12 by umartin-         ###   ########.fr       */
+/*   Updated: 2022/12/15 17:15:16 by umartin-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,29 +35,34 @@ void	philo_dead(t_philo *philo, int time)
 	current = get_time();
 	if ((current - philo->last_meal) > philo->data->time_to_die)
 	{
+		pthread_mutex_unlock(&philo->data->fork[philo->left_fork]);
+		pthread_mutex_unlock(&philo->data->fork[philo->right_fork]);
 		pthread_mutex_lock(&philo->data->write_mutex);
-		printf("\x1B[34m%d\x1B[0m  %d \033[1;37mdied\033[0;m 💀\n",
+		printf("\x1B[34m%d\x1B[0m  %d \033[1;37mdied 💀\033[0;m\n",
 			time, philo->num + 1);
 		exit (0);
 	}
 }
 
+static int	time_diff(struct timeval ti)
+{
+	struct timeval	current;
+
+	gettimeofday(&current, NULL);
+	return (((current.tv_sec * 1000) + (current.tv_usec / 1000))
+		- ((ti.tv_sec * 1000) + (ti.tv_usec / 1000)));
+}
+
 int	precise_usleep(int time, t_philo *philo)
 {
-	int	t;
+	struct timeval	ti;
 
-	time = time * 1000;
-	t = time % 100;
-	time = (time / 100);
-	usleep (t);
-	while (time > 0)
+	gettimeofday(&ti, NULL);
+	while (time > time_diff(ti))
 	{
 		philo_dead(philo, time_clock(philo->data->init_time));
 		usleep(100);
-		time--;
 	}
-	// printf("time at end: %d\n", time_clock(philo->data->init_time));
-	// exit(0);
 	return (0);
 }
 
@@ -108,17 +113,20 @@ int	data_init(t_data *data, int ac, char **av)
 
 void	routine_sleep(t_philo	*philo)
 {
+	//philo_dead(philo, time_clock(philo->data->init_time));
 	ft_write(philo, "is sleeping", time_clock(philo->data->init_time));
 	precise_usleep(philo->data->time_to_sleep, philo);
 }
 
 void	routine_think(t_philo	*philo)
 {
+	//philo_dead(philo, time_clock(philo->data->init_time));
 	ft_write(philo, "is thinking", time_clock(philo->data->init_time));
 }
 
 void	routine_eat(t_philo	*philo)
 {
+	philo_dead(philo, time_clock(philo->data->init_time));
 	pthread_mutex_lock(&philo->data->fork[philo->left_fork]);
 	ft_write(philo, "has taken a fork", time_clock(philo->data->init_time));
 	pthread_mutex_lock(&philo->data->fork[philo->right_fork]);
@@ -136,8 +144,7 @@ void	*control_de_rutina(void *data)
 
 	philo = (t_philo *)data;
 	if (philo->num % 2 == 0)
-		usleep (100);
-	philo->data->init_time = get_time();
+		usleep (philo->data->time_to_eat / 2);
 	philo->last_meal = get_time();
 	while (1)
 	{
@@ -165,6 +172,7 @@ int	philo_init(t_data *data)
 	data->philo = malloc(sizeof(t_philo) * data->num_of_philo);
 	if (!data->philo)
 		return (error(("\033[0;31mPhilo memory allocation error\033[0;31m")));
+	data->init_time = get_time();
 	while (++i < data->num_of_philo)
 	{
 		philo_data(data, &data->philo[i], i);
