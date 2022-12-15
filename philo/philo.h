@@ -6,7 +6,7 @@
 /*   By: umartin- <umartin-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 17:50:47 by umartin-          #+#    #+#             */
-/*   Updated: 2022/12/15 16:08:08 by umartin-         ###   ########.fr       */
+/*   Updated: 2022/12/15 20:39:33 by umartin-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 # include <pthread.h>
 # include <sys/time.h>
 # include <string.h>
- 
+
 # define RED	"\033[0;31m"
 # define GREEN	"\033[0;32m"
 # define YELLOW	"\033[0;33m"
@@ -45,7 +45,7 @@ typedef struct s_data
 	time_t			time_to_eat;
 	time_t			time_to_sleep;
 	int				num_meals;
-	int				stop;
+	int				death;
 	int				init_time;
 	pthread_mutex_t	*fork;
 	pthread_mutex_t	dead;
@@ -65,8 +65,15 @@ typedef struct s_philo
 }	t_philo;
 
 //////////////////////UTILS//////////////////////
-int	checker(char **av);
-int	ft_atoi(const char *str);
-int	error(char *buf);
+int		checker(char **av);
+int		ft_atoi(const char *str);
+int		error(char *buf);
+void	*control_de_rutina(void *data);
+int		ft_write(t_philo *philo, char *str, int time);
+int		precise_usleep(int time, t_philo *philo);
+int		time_diff(struct timeval ti);
+int		time_clock(int origin);
+int		get_time(void);
+int		philo_dead(t_philo *philo, int time);
 
 #endif
