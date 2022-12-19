@@ -6,7 +6,7 @@
 /*   By: umartin- <umartin-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/15 17:28:59 by umartin-          #+#    #+#             */
-/*   Updated: 2022/12/19 21:42:17 by umartin-         ###   ########.fr       */
+/*   Updated: 2022/12/19 22:18:21 by umartin-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,20 +22,17 @@ int	philo_dead(t_philo *philo, int time)
 	if (philo->data->death == 1)
 	{
 		usleep (500);
+		pthread_mutex_unlock(&philo->data->fork[philo->left_fork].fork_th);
+		pthread_mutex_unlock(&philo->data->fork[philo->right_fork].fork_th);
+		pthread_mutex_unlock(&philo->data->death_mutex);
 		return (1);
 	}
 	if ((current - philo->last_meal) >= philo->data->time_to_die)
 	{
-		if (philo->data->death == 1)
-		{
-			usleep (500);
-			pthread_mutex_unlock(&philo->data->death_mutex);
-			return (1);
-		}
 		philo->data->death = 1;
-		pthread_mutex_lock(&philo->data->write_mutex);
+		pthread_mutex_unlock(&philo->data->fork[philo->left_fork].fork_th);
+		pthread_mutex_unlock(&philo->data->fork[philo->right_fork].fork_th);
 		printf("\x1B[34m%d\x1B[0m  %d \033[1;37mdied 💀\033[0;m\n", time, philo->num + 1);
-		pthread_mutex_unlock(&philo->data->write_mutex);
 		pthread_mutex_unlock(&philo->data->death_mutex);
 		return (1);
 	}
@@ -110,16 +107,19 @@ void	*control_de_rutina(void *data)
 		if (routine_eat(philo) == 1)
 		{
 			pthread_mutex_unlock(&philo->data->death_mutex);
+			pthread_mutex_unlock(&philo->data->write_mutex);
 			return (NULL);
 		}
 		if (routine_sleep(philo) == 1)
 		{
 			pthread_mutex_unlock(&philo->data->death_mutex);
+			pthread_mutex_unlock(&philo->data->write_mutex);
 			return (NULL);
 		}
 		if (routine_think(philo) == 1)
 		{
 			pthread_mutex_unlock(&philo->data->death_mutex);
+			pthread_mutex_unlock(&philo->data->write_mutex);
 			return (NULL);
 		}
 	}
