@@ -6,7 +6,7 @@
 /*   By: umartin- <umartin-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 16:53:21 by umartin-          #+#    #+#             */
-/*   Updated: 2022/12/15 20:39:29 by umartin-         ###   ########.fr       */
+/*   Updated: 2022/12/19 13:26:12 by umartin-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,14 +17,12 @@ int	fork_init(t_data *data)
 	int	i;
 
 	i = -1;
-	data->fork = malloc(sizeof(pthread_mutex_t) * data->num_of_philo);
+	data->fork = malloc(sizeof(t_fork) * data->num_of_philo);
 	if (!data->fork)
 		return (error(("\033[0;31mMemory allocation error\033[0;31m")));
 	while (++i < data->num_of_philo)
-		if (pthread_mutex_init(&data->fork[i], 0) != 0)
+		if (pthread_mutex_init(&data->fork[i].fork_th, 0) != 0)
 			return (error(("\033[0;31mFork mutex init error\033[0;31m")));
-	if (pthread_mutex_init(&data->dead, 0) != 0)
-		return (error(("\033[0;31mDead mutex init error\033[0;31m")));
 	if (pthread_mutex_init(&data->write_mutex, 0) != 0)
 		return (error(("\033[0;31mWrite mutex init error\033[0;31m")));
 	return (0);

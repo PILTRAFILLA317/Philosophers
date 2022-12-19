@@ -6,7 +6,7 @@
 /*   By: umartin- <umartin-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/15 17:27:13 by umartin-          #+#    #+#             */
-/*   Updated: 2022/12/15 20:40:55 by umartin-         ###   ########.fr       */
+/*   Updated: 2022/12/19 13:25:39 by umartin-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,8 @@ int	precise_usleep(int time, t_philo *philo)
 
 int	ft_write(t_philo *philo, char *str, int time)
 {
+	if (philo->data->death == 1)
+		return (1);
 	pthread_mutex_lock(&philo->data->write_mutex);
 	printf("\x1B[34m%d\x1B[0m  %d %s\n", time, philo->num + 1, str);
 	pthread_mutex_unlock(&philo->data->write_mutex);

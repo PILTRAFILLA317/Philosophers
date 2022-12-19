@@ -6,7 +6,7 @@
 /*   By: umartin- <umartin-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 17:50:47 by umartin-          #+#    #+#             */
-/*   Updated: 2022/12/15 20:39:33 by umartin-         ###   ########.fr       */
+/*   Updated: 2022/12/19 13:24:40 by umartin-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,11 +47,16 @@ typedef struct s_data
 	int				num_meals;
 	int				death;
 	int				init_time;
-	pthread_mutex_t	*fork;
-	pthread_mutex_t	dead;
 	pthread_mutex_t	write_mutex;
 	struct s_philo	*philo;
+	struct s_fork	*fork;
 }	t_data;
+
+typedef struct s_fork
+{
+	pthread_mutex_t	fork_th;
+	int				lck;
+}	t_fork;
 
 typedef struct s_philo
 {
