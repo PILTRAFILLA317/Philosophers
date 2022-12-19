@@ -6,7 +6,7 @@
 /*   By: umartin- <umartin-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/15 17:28:59 by umartin-          #+#    #+#             */
-/*   Updated: 2022/12/19 13:25:06 by umartin-         ###   ########.fr       */
+/*   Updated: 2022/12/19 16:09:25 by umartin-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,8 @@ int	routine_think(t_philo	*philo)
 
 int	routine_eat(t_philo	*philo)
 {
+	if (philo->data->completed_meals == philo->data->num_of_philo)
+		return (philo->data->death = 1, 1);
 	while (philo->data->fork[philo->left_fork].lck == 1)
 		if (philo_dead(philo, time_clock(philo->data->init_time)) == 1)
 			return (1);
@@ -66,11 +68,13 @@ int	routine_eat(t_philo	*philo)
 	ft_write(philo, "is eating", time_clock(philo->data->init_time));
 	if (precise_usleep(philo->data->time_to_eat, philo) == 1)
 		return (1);
+	philo->num_ate ++;
+	if (philo->num_ate == philo->data->num_meals)
+		comp_meals(philo);
 	pthread_mutex_unlock(&philo->data->fork[philo->left_fork].fork_th);
 	philo->data->fork[philo->left_fork].lck = 0;
 	pthread_mutex_unlock(&philo->data->fork[philo->right_fork].fork_th);
-	philo->data->fork[philo->right_fork].lck = 0;
-	return (0);
+	return (philo->data->fork[philo->right_fork].lck = 0, 0);
 }
 
 void	*control_de_rutina(void *data)
@@ -79,7 +83,7 @@ void	*control_de_rutina(void *data)
 
 	philo = (t_philo *)data;
 	if (philo->num % 2 == 0)
-		usleep (800);
+		usleep (500);
 	philo->last_meal = get_time();
 	while (1)
 	{

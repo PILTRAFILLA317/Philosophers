@@ -6,7 +6,7 @@
 /*   By: umartin- <umartin-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 17:50:47 by umartin-          #+#    #+#             */
-/*   Updated: 2022/12/19 13:24:40 by umartin-         ###   ########.fr       */
+/*   Updated: 2022/12/19 16:08:44 by umartin-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,11 @@ typedef struct s_data
 	time_t			time_to_eat;
 	time_t			time_to_sleep;
 	int				num_meals;
+	int				completed_meals;
 	int				death;
 	int				init_time;
 	pthread_mutex_t	write_mutex;
+	pthread_mutex_t	meal_mutex;
 	struct s_philo	*philo;
 	struct s_fork	*fork;
 }	t_data;
@@ -80,5 +82,6 @@ int		time_diff(struct timeval ti);
 int		time_clock(int origin);
 int		get_time(void);
 int		philo_dead(t_philo *philo, int time);
+void	comp_meals(t_philo	*philo);
 
 #endif

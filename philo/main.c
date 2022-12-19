@@ -6,7 +6,7 @@
 /*   By: umartin- <umartin-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 16:53:21 by umartin-          #+#    #+#             */
-/*   Updated: 2022/12/19 13:26:12 by umartin-         ###   ########.fr       */
+/*   Updated: 2022/12/19 16:02:19 by umartin-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ int	fork_init(t_data *data)
 			return (error(("\033[0;31mFork mutex init error\033[0;31m")));
 	if (pthread_mutex_init(&data->write_mutex, 0) != 0)
 		return (error(("\033[0;31mWrite mutex init error\033[0;31m")));
+	if (pthread_mutex_init(&data->meal_mutex, 0) != 0)
+		return (error(("\033[0;31mMeal mutex init error\033[0;31m")));
 	return (0);
 }
 
@@ -43,6 +45,8 @@ int	data_init(t_data *data, int ac, char **av)
 			return (error(("\033[0;31mNumber too big\033[0;31m")));
 		data->num_meals = ft_atoi(av[5]);
 	}
+	else
+		data->num_meals = -1;
 	fork_init(data);
 	return (0);
 }

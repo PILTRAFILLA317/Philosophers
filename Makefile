@@ -6,7 +6,7 @@
 #    By: umartin- <umartin-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/19 11:39:50 by umartin-          #+#    #+#              #
-#    Updated: 2022/12/15 17:33:13 by umartin-         ###   ########.fr        #
+#    Updated: 2022/12/19 16:09:06 by umartin-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,6 +16,7 @@ SRC = philo/main.c		\
 philo/philo_routine.c	\
 philo/utils.c			\
 philo/utils2.c			\
+philo/utils3.c			\
 
 OBJ = $(SRC:.c=.o)
 
