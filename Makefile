@@ -6,7 +6,7 @@
 #    By: umartin- <umartin-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/19 11:39:50 by umartin-          #+#    #+#              #
-#    Updated: 2022/12/19 16:09:06 by umartin-         ###   ########.fr        #
+#    Updated: 2022/12/19 17:01:19 by umartin-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,7 +31,7 @@ EOC = \033[1;0m
 
 HEADERS = philo.h
 CC = gcc
-FLAGS = -Wall -Wextra -Werror -pthread -g3 -fsanitize=address
+FLAGS = -Wall -Wextra -Werror -pthread -g3 #-fsanitize=address
 
 all: $(NAME)
 

@@ -6,7 +6,7 @@
 /*   By: umartin- <umartin-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 16:53:21 by umartin-          #+#    #+#             */
-/*   Updated: 2022/12/19 16:02:19 by umartin-         ###   ########.fr       */
+/*   Updated: 2022/12/19 17:03:33 by umartin-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,6 @@ int	main(int ac, char **av)
 	if (fork_init(&data) == -1)
 		return (1);
 	if (philo_init(&data) == -1)
-		return (1);
+		return (free(data.fork), free(data.philo), 1);
 	return (0);
 }
