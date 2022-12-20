@@ -6,39 +6,11 @@
 /*   By: umartin- <umartin-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/15 17:28:59 by umartin-          #+#    #+#             */
-/*   Updated: 2022/12/19 22:18:21 by umartin-         ###   ########.fr       */
+/*   Updated: 2022/12/20 16:08:11 by umartin-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-int	philo_dead(t_philo *philo, int time)
-{
-	int	current;
-
-	(void)time;
-	current = get_time();
-	pthread_mutex_lock(&philo->data->death_mutex);
-	if (philo->data->death == 1)
-	{
-		usleep (500);
-		pthread_mutex_unlock(&philo->data->fork[philo->left_fork].fork_th);
-		pthread_mutex_unlock(&philo->data->fork[philo->right_fork].fork_th);
-		pthread_mutex_unlock(&philo->data->death_mutex);
-		return (1);
-	}
-	if ((current - philo->last_meal) >= philo->data->time_to_die)
-	{
-		philo->data->death = 1;
-		pthread_mutex_unlock(&philo->data->fork[philo->left_fork].fork_th);
-		pthread_mutex_unlock(&philo->data->fork[philo->right_fork].fork_th);
-		printf("\x1B[34m%d\x1B[0m  %d \033[1;37mdied 💀\033[0;m\n", time, philo->num + 1);
-		pthread_mutex_unlock(&philo->data->death_mutex);
-		return (1);
-	}
-	pthread_mutex_unlock(&philo->data->death_mutex);
-	return (0);
-}
 
 int	routine_sleep(t_philo	*philo)
 {
@@ -55,6 +27,21 @@ int	routine_think(t_philo	*philo)
 	if (philo_dead(philo, time_clock(philo->data->init_time)) == 1)
 		return (1);
 	ft_write(philo, "is thinking", time_clock(philo->data->init_time));
+	return (0);
+}
+
+int	eat_utils(t_philo *philo)
+{	
+	ft_write(philo, "is eating", time_clock(philo->data->init_time));
+	if (precise_usleep(philo->data->time_to_eat, philo) == 1)
+		return (1);
+	if (philo->data->num_of_philo != -1)
+		philo->num_ate ++;
+	if (philo->num_ate == philo->data->num_meals)
+		comp_meals(philo);
+	pthread_mutex_unlock(&philo->data->fork[philo->left_fork].fork_th);
+	philo->data->fork[philo->left_fork].lck = 0;
+	pthread_mutex_unlock(&philo->data->fork[philo->right_fork].fork_th);
 	return (0);
 }
 
@@ -81,16 +68,8 @@ int	routine_eat(t_philo	*philo)
 	philo->data->fork[philo->right_fork].lck = 1;
 	ft_write(philo, "has taken a fork", time_clock(philo->data->init_time));
 	philo->last_meal = get_time();
-	ft_write(philo, "is eating", time_clock(philo->data->init_time));
-	if (precise_usleep(philo->data->time_to_eat, philo) == 1)
+	if (eat_utils(philo) == 1)
 		return (1);
-	if (philo->data->num_of_philo != -1)
-		philo->num_ate ++;
-	if (philo->num_ate == philo->data->num_meals)
-		comp_meals(philo);
-	pthread_mutex_unlock(&philo->data->fork[philo->left_fork].fork_th);
-	philo->data->fork[philo->left_fork].lck = 0;
-	pthread_mutex_unlock(&philo->data->fork[philo->right_fork].fork_th);
 	return (philo->data->fork[philo->right_fork].lck = 0, 0);
 }
 
@@ -106,20 +85,17 @@ void	*control_de_rutina(void *data)
 	{
 		if (routine_eat(philo) == 1)
 		{
-			pthread_mutex_unlock(&philo->data->death_mutex);
-			pthread_mutex_unlock(&philo->data->write_mutex);
+			control_de_rutina_utils(philo);
 			return (NULL);
 		}
 		if (routine_sleep(philo) == 1)
 		{
-			pthread_mutex_unlock(&philo->data->death_mutex);
-			pthread_mutex_unlock(&philo->data->write_mutex);
+			control_de_rutina_utils(philo);
 			return (NULL);
 		}
 		if (routine_think(philo) == 1)
 		{
-			pthread_mutex_unlock(&philo->data->death_mutex);
-			pthread_mutex_unlock(&philo->data->write_mutex);
+			control_de_rutina_utils(philo);
 			return (NULL);
 		}
 	}

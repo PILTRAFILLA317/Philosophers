@@ -6,7 +6,7 @@
 /*   By: umartin- <umartin-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 17:50:47 by umartin-          #+#    #+#             */
-/*   Updated: 2022/12/19 21:43:02 by umartin-         ###   ########.fr       */
+/*   Updated: 2022/12/20 16:04:23 by umartin-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,5 +84,7 @@ int		time_clock(int origin);
 int		get_time(void);
 int		philo_dead(t_philo *philo, int time);
 void	comp_meals(t_philo	*philo);
+void	control_de_rutina_utils(t_philo *philo);
+int		philo_dead(t_philo *philo, int time);
 
 #endif

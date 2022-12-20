@@ -6,7 +6,7 @@
 /*   By: umartin- <umartin-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/06 19:46:24 by umartin-          #+#    #+#             */
-/*   Updated: 2022/12/19 16:09:55 by umartin-         ###   ########.fr       */
+/*   Updated: 2022/12/20 16:09:11 by umartin-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,4 +45,39 @@ int	ft_atoi(const char *str)
 		c++;
 	}
 	return (res * s);
+}
+
+int	philo_dead(t_philo *philo, int time)
+{
+	int	current;
+
+	(void)time;
+	current = get_time();
+	pthread_mutex_lock(&philo->data->death_mutex);
+	if (philo->data->death == 1)
+	{
+		usleep (500);
+		pthread_mutex_unlock(&philo->data->fork[philo->left_fork].fork_th);
+		pthread_mutex_unlock(&philo->data->fork[philo->right_fork].fork_th);
+		pthread_mutex_unlock(&philo->data->death_mutex);
+		return (1);
+	}
+	if ((current - philo->last_meal) >= philo->data->time_to_die)
+	{
+		philo->data->death = 1;
+		pthread_mutex_unlock(&philo->data->fork[philo->left_fork].fork_th);
+		pthread_mutex_unlock(&philo->data->fork[philo->right_fork].fork_th);
+		printf("\x1B[34m%d\x1B[0m  %d \033[1;37mdied 💀\033[0;m\n",
+			time, philo->num + 1);
+		pthread_mutex_unlock(&philo->data->death_mutex);
+		return (1);
+	}
+	pthread_mutex_unlock(&philo->data->death_mutex);
+	return (0);
+}
+
+void	control_de_rutina_utils(t_philo *philo)
+{
+	pthread_mutex_unlock(&philo->data->death_mutex);
+	pthread_mutex_unlock(&philo->data->write_mutex);
 }
