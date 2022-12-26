@@ -6,7 +6,7 @@
 /*   By: umartin- <umartin-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 16:53:21 by umartin-          #+#    #+#             */
-/*   Updated: 2022/12/19 21:13:53 by umartin-         ###   ########.fr       */
+/*   Updated: 2022/12/26 20:09:36 by umartin-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ int	data_init(t_data *data, int ac, char **av)
 	else
 		data->num_meals = -1;
 	data->death = 0;
-	fork_init(data);
 	return (0);
 }
 
@@ -98,6 +97,8 @@ int	main(int ac, char **av)
 	if (fork_init(&data) == -1)
 		return (1);
 	if (philo_init(&data) == -1)
-		return (free(data.fork), free(data.philo), 1);
+		return (1);
+	free(data.fork);
+	free(data.philo);
 	return (0);
 }
