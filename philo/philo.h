@@ -6,7 +6,7 @@
 /*   By: umartin- <umartin-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 17:50:47 by umartin-          #+#    #+#             */
-/*   Updated: 2022/12/20 16:04:23 by umartin-         ###   ########.fr       */
+/*   Updated: 2022/12/26 20:13:23 by umartin-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ typedef struct s_data
 	int				death;
 	int				init_time;
 	pthread_mutex_t	write_mutex;
+	pthread_mutex_t	flock_mutex;
 	pthread_mutex_t	death_mutex;
 	pthread_mutex_t	meal_mutex;
 	struct s_philo	*philo;
